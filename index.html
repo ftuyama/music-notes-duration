@@ -90,7 +90,7 @@
         if (keyPressedTime) {
         const currentTime = Date.now();
         const duration = (currentTime - keyPressedTime) / 1000;
-        durationElement.textContent = Duration: ${duration.toFixed(2)} seconds;
+        durationElement.textContent = `Duration: ${duration.toFixed(2)} seconds`;
         }
     }
 
@@ -99,16 +99,16 @@
       notesElement.innerHTML = '<strong>Detected Notes:</strong><br>';
       durations.forEach((duration, index) => {
         const noteIndex = index + 1;
-        notesElement.innerHTML += ${noteIndex}: ${duration.toFixed(2)} s;
+        notesElement.innerHTML += `${noteIndex}: ${duration.toFixed(2)} s`;
         if (durationsDiff.length > 0) {
             const diff = durationsDiff[index];
             if (diff >= 0) {
-                notesElement.innerHTML += \t\t<span class='green'>+ ${diff.toFixed(2)} s</span>;
+                notesElement.innerHTML += `\t\t<span class='green'>+ ${diff.toFixed(2)} s</span>`;
             } else {
-                notesElement.innerHTML += \t\t<span class='red'>- ${diff.toFixed(2)} s</span>;
+                notesElement.innerHTML += `\t\t<span class='red'>- ${diff.toFixed(2)} s</span>`;
             }
         }
-        notesElement.innerHTML += <br>;
+        notesElement.innerHTML += `<br>`;
       });
     }
 
