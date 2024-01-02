@@ -6,4 +6,4 @@ Click on keys to measure their durations, and visualize the results in a dynamic
 
 The tool provides options to standardize durations and toggle between original and standardized views.
 
-<https://ftuyama.com/music-notes-duration>
+<https://ftuyama.com/music-notes-duration/>
