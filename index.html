@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Multiple Key Duration Detector</title>
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin-top: 50px;
+      background-color: #1c1c1c; /* Dark background color */
+      color: white; /* Text color */
+      text-align: center;
+    }
+    #duration {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #notes {
+      font-size: 18px;
+      text-align: left;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .green {
+      color: green;
+    }
+    .red {
+      color: red;
+    }
+    canvas {
+      margin-top: 20px;
+      border: 1px solid white; /* Border color for the canvas */
+    }
+    .btn-dark {
+      background-color: #333; /* Dark button background color */
+      color: white; /* Button text color */
+    }
+    .btn-dark:hover {
+      background-color: #555; /* Darker button color on hover */
+    }
+  </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5 text-center">Multiple Key Duration Detector</h1>
+      <p class="text-center">Click on the keys to detect their durations:</p>
+      <canvas id="visualization" class="mt-4 mx-auto" width="800"
+        height="120"></canvas>
+      <div id="duration" class="text-center mb-4">Duration: 0.00 seconds</div>
+      <div id="notes" class="mx-auto"></div>
+      <div class="text-center mt-4">
+        <button class="btn btn-dark"
+          onclick="standardizeDurations()">Standardize Durations</button>
+        <button class="btn btn-dark" onclick="toggleBackup()">Toggle</button>
+      </div>
+    </div>
+    <script>
+    let keyPressedTime;
+    let keyReleasedTime;
+    let durations = [];
+    let durationsBackup = [];
+    let durationsDiff = [];
+    let timerId;
+    const durationElement = document.getElementById('duration');
+    const canvas = document.getElementById('visualization');
+    const ctx = canvas.getContext('2d');
+
+    document.addEventListener('keydown', function(event) {
+        if (!keyPressedTime) {
+            keyPressedTime = Date.now();
+            updateDuration();
+            timerId = setInterval(updateDuration, 100); // Update every 100 milliseconds
+        }
+    });
+
+    document.addEventListener('keyup', function(event) {
+      if (keyPressedTime) {
+        clearInterval(timerId);
+        keyReleasedTime = Date.now();
+        const duration = (keyReleasedTime - keyPressedTime) / 1000;
+        durations.push(duration);
+        updateDuration(duration.toFixed(2));
+        updateDetectedNotes();
+        drawVisualization();
+        keyPressedTime = null;
+      }
+    });
+
+    function updateDuration() {
+        if (keyPressedTime) {
+        const currentTime = Date.now();
+        const duration = (currentTime - keyPressedTime) / 1000;
+        durationElement.textContent = Duration: ${duration.toFixed(2)} seconds;
+        }
+    }
+
+    function updateDetectedNotes() {
+      const notesElement = document.getElementById('notes');
+      notesElement.innerHTML = '<strong>Detected Notes:</strong><br>';
+      durations.forEach((duration, index) => {
+        const noteIndex = index + 1;
+        notesElement.innerHTML += ${noteIndex}: ${duration.toFixed(2)} s;
+        if (durationsDiff.length > 0) {
+            const diff = durationsDiff[index];
+            if (diff >= 0) {
+                notesElement.innerHTML += \t\t<span class='green'>+ ${diff.toFixed(2)} s</span>;
+            } else {
+                notesElement.innerHTML += \t\t<span class='red'>- ${diff.toFixed(2)} s</span>;
+            }
+        }
+        notesElement.innerHTML += <br>;
+      });
+    }
+
+    function standardizeDurations() {
+      durationsBackup = durations;
+      if (durations.length > 0) {
+        const minDuration = Math.min(...durations);
+        durationsDiff = durations.map(duration =>  Math.round(duration / minDuration) - duration / minDuration);
+        durations = durations.map(duration => Math.round(duration / minDuration));
+      }
+      updateDetectedNotes();
+      drawVisualization();
+    }
+
+    function toggleBackup() {
+      let other = durations;
+      durations = durationsBackup;
+      durationsBackup = other;
+      updateDetectedNotes();
+      drawVisualization();
+    }
+
+    function drawVisualization() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const maxDuration = Math.max(...durations);
+      const numberNotes = durations.length;
+      const barHeight = 80;
+      const startX = 0;
+      const startY = 10;
+      const spaceBetweenBars = 5;
+      let x = startX;
+      durations.forEach((duration, index) => {
+        const barWidth = (duration / maxDuration) * 100;
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(x, startY, barWidth, barHeight);
+        x += barWidth + spaceBetweenBars;
+      });
+    }
+  </script>
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
